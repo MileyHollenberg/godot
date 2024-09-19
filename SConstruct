@@ -739,6 +739,8 @@ else:
     # Linker needs optimization flags too, at least for Emscripten.
     # For other toolchains, this _may_ be useful for LTO too to disambiguate.
 
+    env.Append(CCFLAGS=["-Wno-module-import-in-extern-c"])
+
     if env["optimize"] == "speed":
         env.Append(CCFLAGS=["-O3"])
         env.Append(LINKFLAGS=["-O3"])
