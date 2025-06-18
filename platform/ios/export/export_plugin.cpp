@@ -324,6 +324,8 @@ void EditorExportPlatformIOS::get_export_options(List<ExportOption> *r_options) 
 
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "capabilities/access_wifi"), false));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "capabilities/push_notifications"), false));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "capabilities/app_attest_production"), false));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "capabilities/app_attest_development"), false));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "capabilities/performance_gaming_tier"), false));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "capabilities/performance_a12"), false));
 
@@ -485,6 +487,16 @@ void EditorExportPlatformIOS::_fix_config_file(const Ref<EditorExportPreset> &p_
 		} else if (lines[i].contains("$entitlements_push_notifications")) {
 			bool is_on = p_preset->get("capabilities/push_notifications");
 			strnew += lines[i].replace("$entitlements_push_notifications", is_on ? "<key>aps-environment</key><string>development</string>" : "") + "\n";
+		} else if (lines[i].contains("$entitlements_appattest_environment")) {
+			bool is_production = p_preset->get("capabilities/app_attest_production");
+			bool is_development = p_preset->get("capabilities/app_attest_development");
+			String appAtestEnviromentSetting = "<key>com.apple.developer.devicecheck.appattest-environment</key><string>";
+			appAtestEnviromentSetting += (is_production ? "production" : "development");
+			appAtestEnviromentSetting += "</string>";
+			strnew += lines[i].replace("$entitlements_appattest_environment",
+				(is_production || is_development) ?
+				appAtestEnviromentSetting
+				: "") + "\n";
 		} else if (lines[i].contains("$required_device_capabilities")) {
 			String capabilities;
 
@@ -2565,7 +2577,7 @@ Error EditorExportPlatformIOS::_export_project_helper(const Ref<EditorExportPres
 	if (ep.step("Making .xcarchive", 3)) {
 		return ERR_SKIP;
 	}
-	
+
 	if (p_preset->get("application/enable_cocoapods").operator bool()) {
 		// Gather CocoaPods dependencies
 		Dictionary dependencies;
