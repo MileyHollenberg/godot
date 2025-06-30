@@ -461,12 +461,22 @@ ThemeDB::~ThemeDB() {
 
 	_finalize_theme_contexts();
 
-	default_theme.unref();
-	project_theme.unref();
+	if (default_theme != nullptr) {
+		default_theme.unref();
+	}
+	if (project_theme != nullptr) {
+		project_theme.unref();
+	}
 
-	fallback_font.unref();
-	fallback_icon.unref();
-	fallback_stylebox.unref();
+	if (fallback_font != nullptr) {
+		fallback_font.unref();
+	}
+	if (fallback_icon != nullptr) {
+		fallback_icon.unref();
+	}
+	if (fallback_stylebox != nullptr) {
+		fallback_stylebox.unref();
+	}
 
 	singleton = nullptr;
 }

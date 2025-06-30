@@ -45,16 +45,19 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>$microphone_usage_description</string>
 	<key>UIRequiresFullScreen</key>
-	<true/>
+	<false/>
 	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		$interface_orientations
+		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		$ipad_interface_orientations
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	$additional_plist_content
 	$plist_launch_screen_name
