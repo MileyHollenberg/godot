@@ -89,9 +89,10 @@ public final class ProcessPhoenix extends Activity {
    * @param pid
    */
   public static void forceQuit(Activity activity, int pid) {
-    Process.killProcess(pid); // Kill original main process
-    activity.finishAndRemoveTask();
-    Runtime.getRuntime().exit(0); // Kill kill kill!
+    // Process.killProcess(pid); // Kill original main process
+    // activity.finishAndRemoveTask();
+    // Runtime.getRuntime().exit(0); // Kill kill kill!
+	throw new RuntimeException("ForceQuit Called, throwing an exception rather than a graceful exit so Crashlytics can capture it");
   }
 
   // -- GODOT end --
