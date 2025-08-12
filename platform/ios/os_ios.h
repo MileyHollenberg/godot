@@ -36,6 +36,8 @@
 #import "ios.h"
 #import "joypad_ios.h"
 
+#import "crash_handler_ios.h"
+
 #import "drivers/coreaudio/audio_driver_coreaudio.h"
 #include "drivers/unix/os_unix.h"
 #include "servers/audio_server.h"
@@ -54,6 +56,8 @@ private:
 	static HashMap<String, void *> dynamic_symbol_lookup_table;
 	friend void register_dynamic_symbol(char *name, void *address);
 
+	CrashHandler crash_handler;
+	
 	AudioDriverCoreAudio audio_driver;
 
 	iOS *ios = nullptr;
@@ -122,6 +126,9 @@ public:
 
 	virtual String get_unique_id() const override;
 	virtual String get_processor_name() const override;
+	
+	virtual void disable_crash_handler() override;
+	virtual bool is_disable_crash_handler() const override;
 
 	virtual void vibrate_handheld(int p_duration_ms = 500, float p_amplitude = -1.0) override;
 

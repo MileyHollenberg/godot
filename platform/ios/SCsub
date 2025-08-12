@@ -62,6 +62,7 @@ ios_lib = [
     "godot_ios.mm",
     "os_ios.mm",
     "main.m",
+    "crash_handler_ios.mm",
     "app_delegate.mm",
     "view_controller.mm",
     "ios.mm",

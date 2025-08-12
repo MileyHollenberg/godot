@@ -127,6 +127,8 @@ void OS_IOS::initialize_core() {
 }
 
 void OS_IOS::initialize() {
+	crash_handler.initialize();
+	
 	initialize_core();
 }
 
@@ -593,6 +595,14 @@ bool OS_IOS::_check_internal_feature_support(const String &p_feature) {
 	}
 
 	return false;
+}
+
+void OS_IOS::disable_crash_handler() {
+	crash_handler.disable();
+}
+
+bool OS_IOS::is_disable_crash_handler() const {
+	return crash_handler.is_disabled();
 }
 
 void OS_IOS::on_focus_out() {

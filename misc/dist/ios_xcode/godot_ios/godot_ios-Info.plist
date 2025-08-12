@@ -62,5 +62,6 @@
 	$additional_plist_content
 	$plist_launch_screen_name
 	<key>CADisableMinimumFrameDurationOnPhone</key><true/>
+	$app_attest_enviroment
 </dict>
 </plist>
