@@ -394,7 +394,9 @@ void initialize_theme_db() {
 }
 
 void finalize_theme_db() {
-	memdelete(theme_db);
+	if (theme_db != nullptr) {
+		memdelete(theme_db);
+	}
 	theme_db = nullptr;
 }
 

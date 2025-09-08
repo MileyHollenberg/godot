@@ -287,7 +287,7 @@ void ThemeDB::_init_default_theme_context() {
 }
 
 void ThemeDB::_finalize_theme_contexts() {
-	if (default_theme_context) {
+	if (default_theme_context != nullptr) {
 		memdelete(default_theme_context);
 		default_theme_context = nullptr;
 	}

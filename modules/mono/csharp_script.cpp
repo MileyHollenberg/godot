@@ -1227,7 +1227,10 @@ void CSharpLanguage::_instance_binding_free_callback(void *, void *, void *p_bin
 }
 
 GDExtensionBool CSharpLanguage::_instance_binding_reference_callback(void *p_token, void *p_binding, GDExtensionBool p_reference) {
-	CRASH_COND(!p_binding);
+//	CRASH_COND(!p_binding);
+	if (unlikely(!p_binding)) {
+		return true;
+	}
 
 	CSharpScriptBinding &script_binding = ((RBMap<Object *, CSharpScriptBinding>::Element *)p_binding)->get();
 
@@ -1239,7 +1242,7 @@ GDExtensionBool CSharpLanguage::_instance_binding_reference_callback(void *p_tok
 	RefCounted *rc_owner = Object::cast_to<RefCounted>(script_binding.owner);
 
 	// Potential fix for a weird crash when shutting down the game on iPhone 16 Pro's
-	if (unlikely(rc_owner)) {
+	if (unlikely(!rc_owner)) {
 		return true;
 	}
 
