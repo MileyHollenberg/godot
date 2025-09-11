@@ -1238,7 +1238,7 @@ GDExtensionBool CSharpLanguage::_instance_binding_reference_callback(void *p_tok
 	if (unlikely(script_binding.owner)) {
 		return true;
 	}
-	
+
 	RefCounted *rc_owner = Object::cast_to<RefCounted>(script_binding.owner);
 
 	// Potential fix for a weird crash when shutting down the game on iPhone 16 Pro's
@@ -2805,7 +2805,7 @@ Ref<Resource> ResourceFormatLoaderCSharpScript::load(const String &p_path, const
 		scr = Ref<CSharpScript>(memnew(CSharpScript));
 	}
 
-#if defined(DEBUG_ENABLED) || defined(TOOLS_ENABLED)
+#if (defined(DEBUG_ENABLED) || defined(TOOLS_ENABLED)) && !defined(ANDROID_ENABLED) && !defined(IOS_ENABLED)
 	Error err = scr->load_source_code(real_path);
 	ERR_FAIL_COND_V_MSG(err != OK, Ref<Resource>(), "Cannot load C# script file '" + real_path + "'.");
 #endif
