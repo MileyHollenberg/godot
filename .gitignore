@@ -390,3 +390,8 @@ $RECYCLE.BIN/
 *.msp
 *.lnk
 *.generated.props
+
+# Custom
+GODOT_VERSION
+MyLocalNugetSource/
+bin copy/
