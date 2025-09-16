@@ -1,9 +1,9 @@
 import os
-import subprocess
-from InquirerPy import inquirer
-from InquirerPy.separator import Separator
-from InquirerPy.base.control import Choice
 import platform
+import subprocess
+
+from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
 
 # Check if the script is being run from the correct directory
 if os.path.basename(os.getcwd()) != "godot":
@@ -14,15 +14,9 @@ if os.path.basename(os.getcwd()) != "godot":
 try:
     with open("version.py", "r") as f:
         version_content = f.read()
-        MAJOR = eval(
-            next(line.split("=")[1].strip() for line in version_content.splitlines() if "major =" in line)
-        )
-        MINOR = eval(
-            next(line.split("=")[1].strip() for line in version_content.splitlines() if "minor =" in line)
-        )
-        PATCH = eval(
-            next(line.split("=")[1].strip() for line in version_content.splitlines() if "patch =" in line)
-        )
+        MAJOR = eval(next(line.split("=")[1].strip() for line in version_content.splitlines() if "major =" in line))
+        MINOR = eval(next(line.split("=")[1].strip() for line in version_content.splitlines() if "minor =" in line))
+        PATCH = eval(next(line.split("=")[1].strip() for line in version_content.splitlines() if "patch =" in line))
         STATUS = next(
             line.split("=")[1].strip().strip('"') for line in version_content.splitlines() if "status =" in line
         )
@@ -64,7 +58,9 @@ else:
 def copyToExportDir(sourceFile, targetName):
     if os.name == "posix" and platform.system() == "Darwin":
         home_dir = os.path.expanduser("~")
-        template_dir = os.path.join(home_dir, "Library", "Application Support", "Godot", "export_templates", GODOT_VERSION)
+        template_dir = os.path.join(
+            home_dir, "Library", "Application Support", "Godot", "export_templates", GODOT_VERSION
+        )
         try:
             os.makedirs(template_dir, exist_ok=True)
             subprocess.run(
@@ -98,18 +94,19 @@ def copyToExportDir(sourceFile, targetName):
         except OSError as e:
             print(f"Error creating directories: {e}")
 
+
 # Define build options and their corresponding functions/scripts
 def build_windows():
     if os.name == "posix" and os.uname().sysname == "Darwin":
         print("Refusing to build Windows binaries on macOS")
         return
     subprocess.run(["./scripts/compile_windows.sh"], shell=True, check=True)
-    
+
     copyToExportDir("godot.windows.template_debug.x86_32.mono.console.exe", "windows_debug_x86_32_console.exe")
     copyToExportDir("godot.windows.template_debug.x86_32.mono.exe", "windows_debug_x86_32.exe")
     copyToExportDir("godot.windows.template_debug.x86_64.mono.console.exe", "windows_debug_x86_64_console.exe")
     copyToExportDir("godot.windows.template_debug.x86_64.mono.exe", "windows_debug_x86_64.exe")
-    
+
     copyToExportDir("godot.windows.template_release.x86_32.mono.console.exe", "windows_release_x86_32_console.exe")
     copyToExportDir("godot.windows.template_release.x86_32.mono.exe", "windows_release_x86_32.exe")
     copyToExportDir("godot.windows.template_release.x86_64.mono.console.exe", "windows_release_x86_64_console.exe")
@@ -140,14 +137,14 @@ def build_macos_editor():
 
 def build_web():
     subprocess.run(["./scripts/compile_web.sh"], shell=True, check=True)
-    
+
     copyToExportDir("godot.web.template_debug.wasm32.zip", "web_debug.zip")
     copyToExportDir("godot.web.template_release.wasm32.zip", "web_release.zip")
 
 
 def build_android():
     subprocess.run(["./scripts/compile_android.sh"], shell=True, check=True)
-    
+
     copyToExportDir("android_source.zip", "android_source.zip")
     copyToExportDir("android_monoDebug.apk", "android_debug.apk")
     copyToExportDir("android_monoRelease.apk", "android_release.apk")
@@ -158,7 +155,7 @@ def build_ios():
         print("Refusing to build iOS binaries on Windows")
         return
     subprocess.run(["./scripts/compile_ios.sh"], shell=True, check=True)
-    
+
     copyToExportDir("ios.zip", "ios.zip")
 
 
