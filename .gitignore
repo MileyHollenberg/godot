@@ -395,3 +395,4 @@ $RECYCLE.BIN/
 GODOT_VERSION
 MyLocalNugetSource/
 bin copy/
+scripts/.build_selections
