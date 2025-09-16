@@ -1,4 +1,4 @@
-    
+
 #!/bin/bash
 
 # Check if the user has provided a directory
@@ -25,5 +25,3 @@ done
 
 # Success message
 echo "Deleted all .d, .o, and .a files from $TARGET_DIR and its subdirectories."
-
-  
