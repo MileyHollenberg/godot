@@ -153,11 +153,15 @@ def build_macos_editor():
     if os.name == "nt":
         print("Refusing to build macOS binaries on Windows")
         return
-    subprocess.run(["scons", "platform=macos", "module_mono_enabled=yes", "target=editor"], check=True)
+    subprocess.run(
+        ["scons", "platform=macos", "arch=arm64", "target=editor", "module_mono_enabled=yes", "generate_bundle=yes"],
+        check=True,
+    )
 
 
 def build_android():
-    os.environ["JAVA_HOME"] = "C:/Program Files/Java/jdk-17"
+    if os.name == "nt":
+        os.environ["JAVA_HOME"] = "C:/Program Files/Java/jdk-17"
 
     subprocess.run(
         ["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=arm32"], check=True
@@ -424,7 +428,7 @@ def main():
                 build_ios()
             elif option == "csharp":
                 print("Building C#...")
-                build_csharp()
+                build_csharp()  # on Windows the macOS Editor app bundle can't be generated before the C# stuff is ready but C# can't be made before the editor has been at least partially build (it relies upon a binary inside it which does get generated but the editor build will fail. So the order is macOS Editor, C#, macOS Editor again)
 
     else:
         print("No build options selected.")
