@@ -1,0 +1,10 @@
+[
+    {
+        "name": "MergeALot",
+        "actions": [
+            "copy_android_libs"
+        ],
+        "windows_path": "E:/Godot/MergeALot/",
+        "macos_path": "/Users/mileyhollenberg/Documents/Godot/MergeALot"
+    }
+]
