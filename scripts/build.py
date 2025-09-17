@@ -1,8 +1,8 @@
+import json
 import os
 import platform
-import subprocess
 import shutil
-import json
+import subprocess
 
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
@@ -80,19 +80,28 @@ def copyToExportDir(sourceFile, targetName):
         if not appdata:
             appdata = os.path.expanduser("~/.config")
         template_dir = os.path.join(appdata, "Godot", "export_templates", GODOT_VERSION)
-    
+
     copyTo(sourceFile, template_dir, targetName)
+
 
 def build_windows():
     if os.name == "posix" and os.uname().sysname == "Darwin":
         print("Refusing to build Windows binaries on macOS")
         return
-    
-    subprocess.run(["scons", "platform=windows", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32"], shell=True, check=True)
-    subprocess.run(["scons", "platform=windows", "module_mono_enabled=yes", "target=template_release", "arch=x86_32"], shell=True, check=True)
-    subprocess.run(["scons", "platform=windows", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64"], shell=True, check=True)
-    subprocess.run(["scons", "platform=windows", "module_mono_enabled=yes", "target=template_release", "arch=x86_64"], shell=True, check=True)
-    
+
+    subprocess.run(
+        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32"], check=True
+    )
+    subprocess.run(
+        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_release", "arch=x86_32"], check=True
+    )
+    subprocess.run(
+        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64"], check=True
+    )
+    subprocess.run(
+        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_release", "arch=x86_64"], check=True
+    )
+
     copyToExportDir("godot.windows.template_debug.x86_32.mono.console.exe", "windows_debug_x86_32_console.exe")
     copyToExportDir("godot.windows.template_debug.x86_32.mono.exe", "windows_debug_x86_32.exe")
     copyToExportDir("godot.windows.template_debug.x86_64.mono.console.exe", "windows_debug_x86_64_console.exe")
@@ -108,19 +117,35 @@ def build_windows_editor():
     if os.name == "posix" and os.uname().sysname == "Darwin":
         print("Refusing to build Windows binaries on macOS")
         return
-    subprocess.run(["scons", "platform=windows", "module_mono_enabled=yes", "target=editor"], shell=True, check=True)
+    subprocess.run(["scons", "platform=windows", "module_mono_enabled=yes", "target=editor"], check=True)
 
 
 def build_macos():
     if os.name == "nt":
         print("Refusing to build macOS binaries on Windows")
         return
-        
-    subprocess.run(["scons", "platform=macos", "module_mono_enabled=yes", "target=template_debug", "arch=arm64"], shell=True, check=True)
-    subprocess.run(["scons", "platform=macos", "module_mono_enabled=yes", "target=template_release", "arch=arm64"], shell=True, check=True)
-    subprocess.run(["scons", "platform=macos", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64"], shell=True, check=True)
-    subprocess.run(["scons", "platform=macos", "module_mono_enabled=yes", "target=template_release", "arch=x86_64", "generate_bundle=yes"], shell=True, check=True) # TODO check if the generate_bundle is needed here
-    
+
+    subprocess.run(
+        ["scons", "platform=macos", "module_mono_enabled=yes", "target=template_debug", "arch=arm64"], check=True
+    )
+    subprocess.run(
+        ["scons", "platform=macos", "module_mono_enabled=yes", "target=template_release", "arch=arm64"], check=True
+    )
+    subprocess.run(
+        ["scons", "platform=macos", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64"], check=True
+    )
+    subprocess.run(
+        [
+            "scons",
+            "platform=macos",
+            "module_mono_enabled=yes",
+            "target=template_release",
+            "arch=x86_64",
+            "generate_bundle=yes",
+        ],
+        check=True,
+    )  # TODO check if the generate_bundle is needed here
+
     copyToExportDir("godot_macos_mono.zip", "macos.zip")
 
 
@@ -128,79 +153,145 @@ def build_macos_editor():
     if os.name == "nt":
         print("Refusing to build macOS binaries on Windows")
         return
-    subprocess.run(["scons", "platform=macos", "module_mono_enabled=yes", "target=editor"], shell=True, check=True)
+    subprocess.run(["scons", "platform=macos", "module_mono_enabled=yes", "target=editor"], check=True)
 
 
 def build_android():
     os.environ["JAVA_HOME"] = "C:/Program Files/Java/jdk-17"
 
-    subprocess.run(["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=arm32"], shell=True, check=True)
-    subprocess.run(["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=arm64", "generate_apk=yes"], shell=True, check=True)
-    subprocess.run(["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=x86_32"], shell=True, check=True)
-    subprocess.run(["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=x86_64", "generate_apk=yes"], shell=True, check=True)
- 
-    subprocess.run(["scons", "platform=android", "module_mono_enabled=yes", "target=template_debug", "arch=arm32"], shell=True, check=True)
-    subprocess.run(["scons", "platform=android", "module_mono_enabled=yes", "target=template_debug", "arch=arm64", "generate_apk=yes"], shell=True, check=True)
-    subprocess.run(["scons", "platform=android", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32"], shell=True, check=True)
-    subprocess.run(["scons", "platform=android", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64", "generate_apk=yes"], shell=True, check=True)
- 
+    subprocess.run(
+        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=arm32"], check=True
+    )
+    subprocess.run(
+        [
+            "scons",
+            "platform=android",
+            "module_mono_enabled=yes",
+            "target=template_release",
+            "arch=arm64",
+            "generate_apk=yes",
+        ],
+        check=True,
+    )
+    subprocess.run(
+        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=x86_32"], check=True
+    )
+    subprocess.run(
+        [
+            "scons",
+            "platform=android",
+            "module_mono_enabled=yes",
+            "target=template_release",
+            "arch=x86_64",
+            "generate_apk=yes",
+        ],
+        check=True,
+    )
+
+    subprocess.run(
+        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_debug", "arch=arm32"], check=True
+    )
+    subprocess.run(
+        [
+            "scons",
+            "platform=android",
+            "module_mono_enabled=yes",
+            "target=template_debug",
+            "arch=arm64",
+            "generate_apk=yes",
+        ],
+        check=True,
+    )
+    subprocess.run(
+        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32"], check=True
+    )
+    subprocess.run(
+        [
+            "scons",
+            "platform=android",
+            "module_mono_enabled=yes",
+            "target=template_debug",
+            "arch=x86_64",
+            "generate_apk=yes",
+        ],
+        check=True,
+    )
+
     copyToExportDir("android_source.zip", "android_source.zip")
     copyToExportDir("android_monoDebug.apk", "android_debug.apk")
     copyToExportDir("android_monoRelease.apk", "android_release.apk")
-    
-    with open('scripts/projects.json') as f:
+
+    with open("scripts/projects.json") as f:
         d = json.load(f)
         for item in d:
             if "actions" in item and "copy_android_libs" in item["actions"]:
                 path = item["macos_path"]
                 if os.name == "nt":
                     path = item["windows_path"]
-                
-                copyTo("godot-lib.template_debug.aar", os.path.join(path, "android", "build", "libs", "debug"), "godot-lib.template_debug.aar")
-                copyTo("godot-lib.template_release.aar", os.path.join(path, "android", "build", "libs", "release"), "godot-lib.template_release.aar")
+
+                copyTo(
+                    "godot-lib.template_debug.aar",
+                    os.path.join(path, "android", "build", "libs", "debug"),
+                    "godot-lib.template_debug.aar",
+                )
+                copyTo(
+                    "godot-lib.template_release.aar",
+                    os.path.join(path, "android", "build", "libs", "release"),
+                    "godot-lib.template_release.aar",
+                )
 
 
 def build_ios():
     if os.name == "nt":
         print("Refusing to build iOS binaries on Windows")
         return
-    subprocess.run(["scons", "p=ios", "target=template_debug", "module_mono_enabled=yes"], shell=True, check=True)
-    subprocess.run(["scons", "p=ios", "target=template_release", "module_mono_enabled=yes"], shell=True, check=True)
-    subprocess.run(["scons", "p=ios", "target=template_debug", "ios_simulator=yes", "arch=x86_64", "module_mono_enabled=yes"], shell=True, check=True)
-    subprocess.run(["scons", "p=ios", "target=template_debug", "ios_simulator=yes", "arch=arm64", "module_mono_enabled=yes"], shell=True, check=True)
 
-    # cp -r misc/dist/ios_xcode ./bin
+    subprocess.run(["scons", "p=ios", "target=template_debug", "module_mono_enabled=yes"], check=True)
+    subprocess.run(["scons", "p=ios", "target=template_release", "module_mono_enabled=yes"], check=True)
+    subprocess.run(
+        ["scons", "p=ios", "target=template_debug", "ios_simulator=yes", "arch=x86_64", "module_mono_enabled=yes"],
+        check=True,
+    )
+    subprocess.run(
+        ["scons", "p=ios", "target=template_debug", "ios_simulator=yes", "arch=arm64", "module_mono_enabled=yes"],
+        check=True,
+    )
+
     shutil.copytree("misc/dist/ios_xcode", "bin/ios_xcode", dirs_exist_ok=True)
 
-    # cp bin/libgodot.ios.template_debug.arm64.a bin/ios_xcode/libgodot.ios.debug.xcframework/ios-arm64/libgodot.a
     os.makedirs("bin/ios_xcode/libgodot.ios.debug.xcframework/ios-arm64", exist_ok=True)
-    shutil.copy("bin/libgodot.ios.template_debug.arm64.a", "bin/ios_xcode/libgodot.ios.debug.xcframework/ios-arm64/libgodot.a")
+    shutil.copy(
+        "bin/libgodot.ios.template_debug.arm64.a", "bin/ios_xcode/libgodot.ios.debug.xcframework/ios-arm64/libgodot.a"
+    )
 
-    # lipo -create bin/libgodot.ios.template_debug.arm64.simulator.a bin/libgodot.ios.template_debug.x86_64.simulator.a -output bin/ios_xcode/libgodot.ios.debug.xcframework/ios-arm64_x86_64-simulator/libgodot.a
     os.makedirs("bin/ios_xcode/libgodot.ios.debug.xcframework/ios-arm64_x86_64-simulator", exist_ok=True)
-    subprocess.run(["lipo", "-create", "bin/libgodot.ios.template_debug.arm64.simulator.a", "bin/libgodot.ios.template_debug.x86_64.simulator.a", "-output", "bin/ios_xcode/libgodot.ios.debug.xcframework/ios-arm64_x86_64-simulator/libgodot.a"], shell=True, check=True)
+    subprocess.run(
+        [
+            "lipo",
+            "-create",
+            "bin/libgodot.ios.template_debug.arm64.simulator.a",
+            "bin/libgodot.ios.template_debug.x86_64.simulator.a",
+            "-output",
+            "bin/ios_xcode/libgodot.ios.debug.xcframework/ios-arm64_x86_64-simulator/libgodot.a",
+        ],
+        check=True,
+    )
 
-    # cp bin/libgodot.ios.template_release.arm64.a bin/ios_xcode/libgodot.ios.release.xcframework/ios-arm64/libgodot.a
     os.makedirs("bin/ios_xcode/libgodot.ios.release.xcframework/ios-arm64", exist_ok=True)
-    shutil.copy("bin/libgodot.ios.template_release.arm64.a", "bin/ios_xcode/libgodot.ios.release.xcframework/ios-arm64/libgodot.a")
+    shutil.copy(
+        "bin/libgodot.ios.template_release.arm64.a",
+        "bin/ios_xcode/libgodot.ios.release.xcframework/ios-arm64/libgodot.a",
+    )
 
-    # lipo -create bin/libgodot.ios.template_release.arm64.simulator.a bin/libgodot.ios.template_release.x86_64.simulator.a -output bin/ios_xcode/libgodot.ios.release.xcframework/ios-arm64_x86_64-simulator/libgodot.a
-    os.makedirs("bin/ios_xcode/libgodot.ios.release.xcframework/ios-arm64_x86_64-simulator", exist_ok=True)
-    subprocess.run(["lipo", "-create", "bin/libgodot.ios.template_release.arm64.simulator.a", "bin/libgodot.ios.template_release.x86_64.simulator.a", "-output", "bin/ios_xcode/libgodot.ios.release.xcframework/ios-arm64_x86_64-simulator/libgodot.a"], shell=True, check=True)
-
-    # cp -r /usr/local/lib/MoltenVK.xcframework bin/ios_xcode/
     moltenvk_path = "/usr/local/lib/MoltenVK.xcframework"
     if os.path.exists(moltenvk_path):
         shutil.copytree(moltenvk_path, "bin/ios_xcode/MoltenVK.xcframework", dirs_exist_ok=True)
     else:
         print(f"Warning: {moltenvk_path} not found.  Skipping MoltenVK copy.")
 
-    # cd bin/ios_xcode
-    # zip -vr ../ios.zip .
-    # cd ../../
     cwd = os.getcwd()
     os.chdir("bin/ios_xcode")
-    subprocess.run(["zip", "-vr", "../ios.zip", "."], shell=True, check=True)
+    subprocess.run(["zip", "-vr", "../ios.zip", "."], check=True)
     os.chdir(cwd)
 
     copyToExportDir("ios.zip", "ios.zip")
@@ -208,15 +299,48 @@ def build_ios():
 
 def build_csharp():
     if os.name == "nt":
-        subprocess.run(["bin\godot.windows.editor.x86_64.mono.exe", "--headless", "--generate-mono-glue", "modules/mono/glue"], shell=True, check=True)
-        subprocess.run(["python", "./modules/mono/build_scripts/build_assemblies.py", "--godot-output-dir", "./bin", "--godot-platform=windows", "--push-nupkgs-local", "C:/Users/MegaMiley/Documents/godot/bin/MyLocalNugetSource"], shell=True, check=True)
+        subprocess.run(
+            ["bin\godot.windows.editor.x86_64.mono.exe", "--headless", "--generate-mono-glue", "modules/mono/glue"],
+            check=True,
+        )
+        subprocess.run(
+            [
+                "python",
+                "./modules/mono/build_scripts/build_assemblies.py",
+                "--godot-output-dir",
+                "./bin",
+                "--godot-platform=windows",
+                "--push-nupkgs-local",
+                "C:/Users/MegaMiley/Documents/godot/bin/MyLocalNugetSource",
+            ],
+            check=True,
+        )
     else:
-        subprocess.run(["bin/godot_macos_editor_mono.app/Contents/MacOS/Godot", "--headless", "--generate-mono-glue", "modules/mono/glue"], shell=True, check=True)
-        subprocess.run(["python3", "./modules/mono/build_scripts/build_assemblies.py", "--godot-output-dir", "./bin", "--godot-platform=macos", "--push-nupkgs-local", "~/MyLocalNugetSource"], shell=True, check=True)
+        subprocess.run(
+            [
+                "bin/godot_macos_editor_mono.app/Contents/MacOS/Godot",
+                "--headless",
+                "--generate-mono-glue",
+                "modules/mono/glue",
+            ],
+            check=True,
+        )
+        subprocess.run(
+            [
+                "python3",
+                "./modules/mono/build_scripts/build_assemblies.py",
+                "--godot-output-dir",
+                "./bin",
+                "--godot-platform=macos",
+                "--push-nupkgs-local",
+                "~/MyLocalNugetSource",
+            ],
+            check=True,
+        )
 
 
 def clean_builds():
-    shutil.rmtree('bin/obj')
+    shutil.rmtree("bin/obj")
 
 
 selections_file = "./scripts/.build_selections"
