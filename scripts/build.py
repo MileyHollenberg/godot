@@ -428,7 +428,7 @@ def main():
                 build_ios()
             elif option == "csharp":
                 print("Building C#...")
-                build_csharp()  # on Windows the macOS Editor app bundle can't be generated before the C# stuff is ready but C# can't be made before the editor has been at least partially build (it relies upon a binary inside it which does get generated but the editor build will fail. So the order is macOS Editor, C#, macOS Editor again)
+                build_csharp()  # on macOS the Editor app bundle can't be generated before the C# stuff is ready but C# can't be made before the editor has been at least partially build (it relies upon a binary inside it which does get generated but the editor build will fail. So the order is macOS Editor, C#, macOS Editor again)
 
     else:
         print("No build options selected.")
