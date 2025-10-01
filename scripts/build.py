@@ -29,27 +29,27 @@ if PATCH == 0:
 else:
     GODOT_VERSION = f"{MAJOR}.{MINOR}.{PATCH}.{STATUS}.mono"
 
-if os.name == "posix":
-    if os.uname().sysname == "Darwin":
-        try:
-            with open(os.path.expanduser("~/Documents/AndroidKeystore/godot.gdkey"), "r") as f:
-                os.environ["SCRIPT_AES256_ENCRYPTION_KEY"] = f.read().strip()
-        except FileNotFoundError:
-            print("Error: godot.gdkey not found at ~/Documents/AndroidKeystore/")
-            exit(1)
-    else:
-        print("Unsupported OS detected, can't retrieve the godot.gdkey")
-        exit(1)
-elif os.name == "nt":
-    try:
-        with open(os.path.join("E:/", "AndroidKeystore", "godot.gdkey"), "r") as f:
-            os.environ["SCRIPT_AES256_ENCRYPTION_KEY"] = f.read().strip()
-    except FileNotFoundError:
-        print("Error: godot.gdkey not found at E:\\AndroidKeystore\\")
-        exit(1)
-else:
-    print("Unsupported OS detected.")
-    exit(1)
+# if os.name == "posix":
+#     if os.uname().sysname == "Darwin":
+#         try:
+#             with open(os.path.expanduser("~/Documents/AndroidKeystore/godot.gdkey"), "r") as f:
+#                 os.environ["SCRIPT_AES256_ENCRYPTION_KEY"] = f.read().strip()
+#         except FileNotFoundError:
+#             print("Error: godot.gdkey not found at ~/Documents/AndroidKeystore/")
+#             exit(1)
+#     else:
+#         print("Unsupported OS detected, can't retrieve the godot.gdkey")
+#         exit(1)
+# elif os.name == "nt":
+#     try:
+#         with open(os.path.join("E:/", "AndroidKeystore", "godot.gdkey"), "r") as f:
+#             os.environ["SCRIPT_AES256_ENCRYPTION_KEY"] = f.read().strip()
+#     except FileNotFoundError:
+#         print("Error: godot.gdkey not found at E:\\AndroidKeystore\\")
+#         exit(1)
+# else:
+#     print("Unsupported OS detected.")
+#     exit(1)
 
 
 def copyTo(sourceFile, targetDirectory, targetName):
