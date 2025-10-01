@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  openxr_util.h                                                         */
+/*  test_triangle2.h                                                      */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -30,29 +30,41 @@
 
 #pragma once
 
-#include "core/string/ustring.h"
+#include "modules/navigation_2d/triangle2.h"
 
-#include <openxr/openxr.h>
+#include "tests/test_macros.h"
 
-class OpenXRUtil {
-public:
-	static String get_view_configuration_name(XrViewConfigurationType p_view_configuration);
-	static String get_reference_space_name(XrReferenceSpaceType p_reference_space);
-	static String get_structure_type_name(XrStructureType p_structure_type);
-	static String get_session_state_name(XrSessionState p_session_state);
-	static String get_action_type_name(XrActionType p_action_type);
-	static String get_environment_blend_mode_name(XrEnvironmentBlendMode p_blend_mode);
-	static String make_xr_version_string(XrVersion p_version);
+namespace TestTriangle2 {
+TEST_SUITE("[Triangle2]") {
+	TEST_CASE("[Triangle2] Test get_area") {
+		const Vector2 p0(5.0, 5.0);
+		const Vector2 p1(6.0, 7.0);
+		const Vector2 p2(7.0, 6.0);
 
-	// Copied from OpenXR xr_linear.h private header, so we can still link against
-	// system-provided packages without relying on our `thirdparty` code.
+		CHECK_EQ(Triangle2(p0, p1, p2).get_area(), doctest::Approx(1.5));
+		CHECK_EQ(Triangle2(p0, p2, p1).get_area(), doctest::Approx(1.5));
 
-	// Column-major, pre-multiplied. This type does not exist in the OpenXR API and is provided for convenience.
-	typedef struct XrMatrix4x4f {
-		float m[16];
-	} XrMatrix4x4f;
+		CHECK_EQ(Triangle2(p0, p2, p2).get_area(), doctest::Approx(0.0));
+		CHECK_EQ(Triangle2(p0, p1, p1).get_area(), doctest::Approx(0.0));
+	}
 
-	static void XrMatrix4x4f_CreateProjection(XrMatrix4x4f *result, const float tanAngleLeft, const float tanAngleRight,
-			const float tanAngleUp, float const tanAngleDown, const float nearZ, const float farZ);
-	static void XrMatrix4x4f_CreateProjectionFov(XrMatrix4x4f *result, const XrFovf fov, const float nearZ, const float farZ);
-};
+	TEST_CASE("[Triangle2] Test get_closest_point_to") {
+		const Vector2 p0(5.0, 5.0);
+		const Vector2 p1(6.0, 7.0);
+		const Vector2 p2(7.0, 6.0);
+
+		const Vector2 p3(0.0, 0.0);
+		const Vector2 p4(6.0, 6.5);
+
+		const Triangle2 t(p0, p1, p2);
+
+		CHECK(t.get_closest_point_to(p0).is_equal_approx(p0));
+		CHECK(t.get_closest_point_to(p1).is_equal_approx(p1));
+		CHECK(t.get_closest_point_to(p2).is_equal_approx(p2));
+
+		CHECK(t.get_closest_point_to(p3).is_equal_approx(p0));
+
+		CHECK(t.get_closest_point_to(p4).is_equal_approx(p4));
+	}
+}
+} // namespace TestTriangle2
