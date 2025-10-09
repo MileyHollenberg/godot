@@ -3,6 +3,7 @@ import os
 import platform
 import shutil
 import subprocess
+import sys
 
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice
@@ -70,15 +71,18 @@ def copyTo(sourceFile, targetDirectory, targetName):
 
 
 def copyToExportDir(sourceFile, targetName):
-    if os.name == "posix" and platform.system() == "Darwin":
+    if sys.platform == "darwin":  # macOS
         home_dir = os.path.expanduser("~")
         template_dir = os.path.join(
             home_dir, "Library", "Application Support", "Godot", "export_templates", GODOT_VERSION
         )
-    elif os.name == "nt":
+    elif sys.platform.startswith("linux"):  # Linux
+        home_dir = os.path.expanduser("~")
+        template_dir = os.path.join(home_dir, ".local", "share", "godot", "export_templates", GODOT_VERSION)
+    elif sys.platform == "win32":  # Windows
         appdata = os.environ.get("APPDATA")
         if not appdata:
-            appdata = os.path.expanduser("~/.config")
+            appdata = os.path.expanduser("~/.config")  # Fallback for non-standard setups, though less common on Windows
         template_dir = os.path.join(appdata, "Godot", "export_templates", GODOT_VERSION)
 
     copyTo(sourceFile, template_dir, targetName)
@@ -119,6 +123,28 @@ def build_windows_editor():
         return
     subprocess.run(["scons", "platform=windows", "module_mono_enabled=yes", "target=editor"], check=True)
 
+
+def build_linux():
+    subprocess.run(
+        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32", "use_llvm=yes"], check=True
+    )
+    subprocess.run(
+        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_release", "arch=x86_32", "use_llvm=yes"], check=True
+    )
+    subprocess.run(
+        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64", "use_llvm=yes"], check=True
+    )
+    subprocess.run(
+        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_release", "arch=x86_64", "use_llvm=yes"], check=True
+    )
+
+    copyToExportDir("godot.linuxbsd.template_debug.x86_32.llvm.mono", "linux_debug.x86_32")
+    copyToExportDir("godot.linuxbsd.template_debug.x86_64.llvm.mono", "linux_debug.x86_64")
+    copyToExportDir("godot.linuxbsd.template_release.x86_32.llvm.mono", "linux_release.x86_32")
+    copyToExportDir("godot.linuxbsd.template_release.x86_64.llvm.mono", "linux_release.x86_64")
+
+def build_linux_editor():
+    subprocess.run(["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=editor", "use_llvm=yes"], check=True)
 
 def build_macos():
     if os.name == "nt":
@@ -319,6 +345,28 @@ def build_csharp():
             ],
             check=True,
         )
+    elif sys.platform.startswith("linux"):
+        subprocess.run(
+            [
+                "bin/godot.linuxbsd.editor.x86_64.llvm.mono",
+                "--headless",
+                "--generate-mono-glue",
+                "modules/mono/glue",
+            ],
+            check=True,
+        )
+        subprocess.run(
+            [
+                "python3",
+                "./modules/mono/build_scripts/build_assemblies.py",
+                "--godot-output-dir",
+                "./bin",
+                "--godot-platform=linuxbsd",
+                "--push-nupkgs-local",
+                "../../.nuget/NuGet/MyLocalNugetSource", # TODO figure out a better way to do this, using ~ doesn't seem to work
+            ],
+            check=True,
+        )
     else:
         subprocess.run(
             [
@@ -361,6 +409,8 @@ except FileNotFoundError:
 build_options = [
     Choice("windows_editor", name="Windows Editor", enabled=previous_selections.get("windows_editor", False)),
     Choice("windows", name="Windows", enabled=previous_selections.get("windows", False)),
+    Choice("linux_editor", name="Linux Editor", enabled=previous_selections.get("linux_editor", False)),
+    Choice("linux", name="Linux", enabled=previous_selections.get("linux", False)),
     Choice("macos_editor", name="macOS Editor", enabled=previous_selections.get("macos_editor", False)),
     Choice("macos", name="macOS", enabled=previous_selections.get("macos", False)),
     Choice("android", name="Android", enabled=previous_selections.get("android", False)),
@@ -414,6 +464,12 @@ def main():
             elif option == "windows":
                 print("Building Windows...")
                 build_windows()
+            if option == "linux_editor":
+                print("Building Linux Editor...")
+                build_linux_editor()
+            elif option == "linux":
+                print("Building Linux...")
+                build_linux()
             elif option == "macos_editor":
                 print("Building MacOS Editor...")
                 build_macos_editor()
