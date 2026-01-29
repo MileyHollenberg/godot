@@ -53,6 +53,23 @@ else:
 #     exit(1)
 
 
+optimize_flags = [
+        "module_godot_physics_3d_enabled=no",
+        "module_jolt_enabled=no",
+        "disable_physics_2d=yes",
+        "disable_physics_3d=yes",
+        "profile=scripts/custom.py",
+    ]
+
+editor_flags = [
+    "production=yes",
+    "module_svg_enabled=yes",      # Required for Editor Icons
+    "module_mbedtls_enabled=yes",  # Required for Editor crypto/hashing
+    "module_freetype_enabled=yes", # Required for Editor fonts
+    "module_zip_enabled=yes",      # Required for exporting projects
+]
+
+
 def copyTo(sourceFile, targetDirectory, targetName):
     try:
         os.makedirs(targetDirectory, exist_ok=True)
@@ -94,16 +111,16 @@ def build_windows():
         return
 
     subprocess.run(
-        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32"], check=True
+        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32", *optimize_flags], check=True
     )
     subprocess.run(
-        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_release", "arch=x86_32"], check=True
+        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_release", "arch=x86_32", *optimize_flags], check=True
     )
     subprocess.run(
-        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64"], check=True
+        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64", *optimize_flags], check=True
     )
     subprocess.run(
-        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_release", "arch=x86_64"], check=True
+        ["scons", "platform=windows", "module_mono_enabled=yes", "target=template_release", "arch=x86_64", *optimize_flags], check=True
     )
 
     copyToExportDir("godot.windows.template_debug.x86_32.mono.console.exe", "windows_debug_x86_32_console.exe")
@@ -121,21 +138,21 @@ def build_windows_editor():
     if os.name == "posix" and os.uname().sysname == "Darwin":
         print("Refusing to build Windows binaries on macOS")
         return
-    subprocess.run(["scons", "platform=windows", "module_mono_enabled=yes", "target=editor"], check=True)
+    subprocess.run(["scons", "platform=windows", "module_mono_enabled=yes", "target=editor", *editor_flags], check=True)
 
 
 def build_linux():
     subprocess.run(
-        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32", "use_llvm=yes"], check=True
+        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32", "use_llvm=yes", *optimize_flags], check=True
     )
     subprocess.run(
-        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_release", "arch=x86_32", "use_llvm=yes"], check=True
+        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_release", "arch=x86_32", "use_llvm=yes", *optimize_flags], check=True
     )
     subprocess.run(
-        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64", "use_llvm=yes"], check=True
+        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64", "use_llvm=yes", *optimize_flags], check=True
     )
     subprocess.run(
-        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_release", "arch=x86_64", "use_llvm=yes"], check=True
+        ["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=template_release", "arch=x86_64", "use_llvm=yes", *optimize_flags], check=True
     )
 
     copyToExportDir("godot.linuxbsd.template_debug.x86_32.llvm.mono", "linux_debug.x86_32")
@@ -144,7 +161,7 @@ def build_linux():
     copyToExportDir("godot.linuxbsd.template_release.x86_64.llvm.mono", "linux_release.x86_64")
 
 def build_linux_editor():
-    subprocess.run(["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=editor", "use_llvm=yes"], check=True)
+    subprocess.run(["scons", "platform=linuxbsd", "module_mono_enabled=yes", "target=editor", "use_llvm=yes", *editor_flags], check=True)
 
 def build_macos():
     if os.name == "nt":
@@ -152,13 +169,13 @@ def build_macos():
         return
 
     subprocess.run(
-        ["scons", "platform=macos", "module_mono_enabled=yes", "target=template_debug", "arch=arm64"], check=True
+        ["scons", "platform=macos", "module_mono_enabled=yes", "target=template_debug", "arch=arm64", *optimize_flags], check=True
     )
     subprocess.run(
-        ["scons", "platform=macos", "module_mono_enabled=yes", "target=template_release", "arch=arm64"], check=True
+        ["scons", "platform=macos", "module_mono_enabled=yes", "target=template_release", "arch=arm64", *optimize_flags], check=True
     )
     subprocess.run(
-        ["scons", "platform=macos", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64"], check=True
+        ["scons", "platform=macos", "module_mono_enabled=yes", "target=template_debug", "arch=x86_64", *optimize_flags], check=True
     )
     subprocess.run(
         [
@@ -180,7 +197,7 @@ def build_macos_editor():
         print("Refusing to build macOS binaries on Windows")
         return
     subprocess.run(
-        ["scons", "platform=macos", "arch=arm64", "target=editor", "module_mono_enabled=yes", "generate_bundle=yes"],
+        ["scons", "platform=macos", "arch=arm64", "target=editor", "module_mono_enabled=yes", "generate_bundle=yes", *editor_flags],
         check=True,
     )
 
@@ -190,7 +207,7 @@ def build_android():
         os.environ["JAVA_HOME"] = "C:/Program Files/Java/jdk-17"
 
     subprocess.run(
-        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=arm32"], check=True
+        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=arm32", *optimize_flags], check=True
     )
     subprocess.run(
         [
@@ -200,11 +217,12 @@ def build_android():
             "target=template_release",
             "arch=arm64",
             "generate_apk=yes",
+            *optimize_flags
         ],
         check=True,
     )
     subprocess.run(
-        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=x86_32"], check=True
+        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_release", "arch=x86_32", *optimize_flags], check=True
     )
     subprocess.run(
         [
@@ -214,12 +232,13 @@ def build_android():
             "target=template_release",
             "arch=x86_64",
             "generate_apk=yes",
+            *optimize_flags
         ],
         check=True,
     )
 
     subprocess.run(
-        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_debug", "arch=arm32"], check=True
+        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_debug", "arch=arm32", *optimize_flags], check=True
     )
     subprocess.run(
         [
@@ -229,11 +248,12 @@ def build_android():
             "target=template_debug",
             "arch=arm64",
             "generate_apk=yes",
+            *optimize_flags
         ],
         check=True,
     )
     subprocess.run(
-        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32"], check=True
+        ["scons", "platform=android", "module_mono_enabled=yes", "target=template_debug", "arch=x86_32", *optimize_flags], check=True
     )
     subprocess.run(
         [
@@ -243,6 +263,7 @@ def build_android():
             "target=template_debug",
             "arch=x86_64",
             "generate_apk=yes",
+            *optimize_flags
         ],
         check=True,
     )
@@ -276,14 +297,14 @@ def build_ios():
         print("Refusing to build iOS binaries on Windows")
         return
 
-    subprocess.run(["scons", "p=ios", "target=template_debug", "module_mono_enabled=yes"], check=True)
-    subprocess.run(["scons", "p=ios", "target=template_release", "module_mono_enabled=yes"], check=True)
+    subprocess.run(["scons", "p=ios", "target=template_debug", "module_mono_enabled=yes", *optimize_flags], check=True)
+    subprocess.run(["scons", "p=ios", "target=template_release", "module_mono_enabled=yes", *optimize_flags], check=True)
     subprocess.run(
-        ["scons", "p=ios", "target=template_debug", "ios_simulator=yes", "arch=x86_64", "module_mono_enabled=yes"],
+        ["scons", "p=ios", "target=template_debug", "ios_simulator=yes", "arch=x86_64", "module_mono_enabled=yes", *optimize_flags],
         check=True,
     )
     subprocess.run(
-        ["scons", "p=ios", "target=template_debug", "ios_simulator=yes", "arch=arm64", "module_mono_enabled=yes"],
+        ["scons", "p=ios", "target=template_debug", "ios_simulator=yes", "arch=arm64", "module_mono_enabled=yes", *optimize_flags],
         check=True,
     )
 
@@ -484,7 +505,8 @@ def main():
                 build_ios()
             elif option == "csharp":
                 print("Building C#...")
-                build_csharp()  # on macOS the Editor app bundle can't be generated before the C# stuff is ready but C# can't be made before the editor has been at least partially build (it relies upon a binary inside it which does get generated but the editor build will fail. So the order is macOS Editor, C#, macOS Editor again)
+                build_csharp()
+                # on macOS the Editor app bundle can't be generated before the C# stuff is ready but C# can't be made before the editor has been at least partially build (it relies upon a binary inside it which does get generated but the editor build will fail. So the order is macOS Editor, C#, macOS Editor again)
 
     else:
         print("No build options selected.")
