@@ -5,6 +5,7 @@
             "copy_android_libs"
         ],
         "windows_path": "E:/Godot/MergeALot/",
-        "macos_path": "/Users/mileyhollenberg/Documents/Godot/MergeALot"
+        "macos_path": "/Users/mileyhollenberg/Documents/Godot/MergeALot",
+        "linux_path": "/media/megamiley/DevData/MergeALot/MergeALot/"
     }
 ]

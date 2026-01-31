@@ -54,10 +54,10 @@ else:
 
 
 optimize_flags = [
-        "module_godot_physics_3d_enabled=no",
-        "module_jolt_enabled=no",
-        "disable_physics_2d=yes",
-        "disable_physics_3d=yes",
+#        "module_godot_physics_3d_enabled=no",
+        # "module_jolt_enabled=no",
+        # "disable_physics_2d=yes",
+#        "disable_physics_3d=yes",
         "profile=scripts/custom.py",
     ]
 
@@ -279,6 +279,8 @@ def build_android():
                 path = item["macos_path"]
                 if os.name == "nt":
                     path = item["windows_path"]
+                if sys.platform.startswith("linux"):
+                    path = item["linux_path"]
 
                 copyTo(
                     "godot-lib.template_debug.aar",
