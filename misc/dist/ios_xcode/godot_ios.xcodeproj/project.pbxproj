@@ -229,7 +229,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Upload DYSM symbols to Crashlytics on build.\n\"Pods/FirebaseCrashlytics/run\"\n";
+			shellScript = "# Upload DYSM symbols to Crashlytics on build.\n\"Crashlytics/run\"\n";
         };
 /* End PBXSourcesBuildPhase section */
 

@@ -43,7 +43,7 @@
    </TestAction>
    <LaunchAction
       buildConfiguration = "$default_build_config"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedDebuggerIdentifier = ""
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"

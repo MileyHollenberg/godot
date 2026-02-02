@@ -107,6 +107,9 @@ void GDExtensionExportPlugin::_export_file(const String &p_path, const String &p
 		String library_path = GDExtensionLibraryLoader::find_extension_library(
 				p_path, config, [features_wo_arch, arch_tag](const String &p_feature) { return features_wo_arch.has(p_feature) || (p_feature == arch_tag); }, &tags);
 
+		print_line("Library Path found");
+		print_line(library_path);
+
 		if (libs_added.has(library_path)) {
 			continue; // Universal library, already added for another arch, do not duplicate.
 		}
@@ -115,6 +118,7 @@ void GDExtensionExportPlugin::_export_file(const String &p_path, const String &p
 			add_shared_object(library_path, tags);
 
 			if (p_features.has("apple_embedded") && (library_path.ends_with(".a") || library_path.ends_with(".xcframework"))) {
+				print_line("Extra code for library");
 				String additional_code = "extern void register_dynamic_symbol(char *name, void *address);\n"
 										 "extern void add_apple_embedded_platform_init_callback(void (*cb)());\n"
 										 "\n"
@@ -137,6 +141,7 @@ void GDExtensionExportPlugin::_export_file(const String &p_path, const String &p
 
 			// Update found library info.
 			if (arch_tag == "universal") {
+				print_line("Universal found");
 				for (const String &sub_arch_tag : archs) {
 					if (sub_arch_tag != "universal") {
 						libs_found[sub_arch_tag].count++;

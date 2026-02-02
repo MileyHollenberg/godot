@@ -62,11 +62,11 @@ optimize_flags = [
     ]
 
 editor_flags = [
-    "production=yes",
-    "module_svg_enabled=yes",      # Required for Editor Icons
-    "module_mbedtls_enabled=yes",  # Required for Editor crypto/hashing
-    "module_freetype_enabled=yes", # Required for Editor fonts
-    "module_zip_enabled=yes",      # Required for exporting projects
+    # "production=yes",
+ #    "module_svg_enabled=yes",      # Required for Editor Icons
+ #    "module_mbedtls_enabled=yes",  # Required for Editor crypto/hashing
+ #    "module_freetype_enabled=yes", # Required for Editor fonts
+ #    "module_zip_enabled=yes",      # Required for exporting projects
 ]
 
 
@@ -353,7 +353,7 @@ def build_ios():
 def build_csharp():
     if os.name == "nt":
         subprocess.run(
-            ["bin\godot.windows.editor.x86_64.mono.exe", "--headless", "--generate-mono-glue", "modules/mono/glue"],
+            ["bin/godot.windows.editor.x86_64.mono.exe", "--headless", "--generate-mono-glue", "modules/mono/glue"],
             check=True,
         )
         subprocess.run(
@@ -408,7 +408,7 @@ def build_csharp():
                 "./bin",
                 "--godot-platform=macos",
                 "--push-nupkgs-local",
-                "~/MyLocalNugetSource",
+                "/Users/mileyhollenberg/MyLocalNugetSource",
             ],
             check=True,
         )
