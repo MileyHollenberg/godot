@@ -12,3 +12,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.SYNC_PAT }}
           REPOSITORY: ${{ github.repository }}
+      - run: gh repo sync $REPOSITORY -b 4.7 --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.SYNC_PAT }}
+          REPOSITORY: ${{ github.repository }}
+      - run: gh repo sync $REPOSITORY -b 4.6 --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.SYNC_PAT }}
+          REPOSITORY: ${{ github.repository }}
+      - run: gh repo sync $REPOSITORY -b 4.5 --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.SYNC_PAT }}
+          REPOSITORY: ${{ github.repository }}
