@@ -579,7 +579,7 @@ Files extracted from upstream source:
 ## libpng
 
 - Upstream: http://libpng.org/pub/png/libpng.html
-- Version: 1.6.53 (4e3f57d50f552841550a36eabbb3fbcecacb7750, 2025)
+- Version: 1.6.58 (3061454d980de7d53608f594194cfac722721d2a, 2026)
 - License: libpng/zlib
 
 Files extracted from upstream source:
@@ -746,8 +746,8 @@ Files extracted from upstream source:
 
 ## minizip
 
-- Upstream: https://www.zlib.net
-- Version: 1.3.1 (zlib contrib, 2024)
+- Upstream: https://github.com/madler/zlib
+- Version: 1.3.2 (da607da739fa6047df13e66a2af6b8bec7c2a498, 2026)
 - License: zlib
 
 Files extracted from the upstream source:
@@ -1230,8 +1230,8 @@ Files extracted from upstream source:
 
 ## zlib
 
-- Upstream: https://www.zlib.net
-- Version: 1.3.1 (2024)
+- Upstream: https://github.com/madler/zlib
+- Version: 1.3.2 (da607da739fa6047df13e66a2af6b8bec7c2a498, 2026)
 - License: zlib
 
 Files extracted from upstream source:
