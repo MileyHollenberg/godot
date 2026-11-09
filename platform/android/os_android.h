@@ -87,8 +87,8 @@ private:
 
 public:
 	static const char *ANDROID_EXEC_PATH;
-	static const int DEFAULT_WINDOW_WIDTH = 800;
-	static const int DEFAULT_WINDOW_HEIGHT = 600;
+	static const int DEFAULT_WINDOW_WIDTH = 760;
+	static const int DEFAULT_WINDOW_HEIGHT = 570;
 
 #ifdef TOOLS_ENABLED
 	Error sign_apk(const String &p_input_path, const String &p_output_path, const String &p_keystore_path, const String &p_keystore_user, const String &p_keystore_password);
@@ -191,5 +191,6 @@ private:
 #ifdef TOOLS_ENABLED
 	static void _on_main_screen_changed(const String &p_screen_name);
 	static void _on_distraction_free_mode_changed(bool p_enable);
+	static void _show_editor_game_dock();
 #endif
 };

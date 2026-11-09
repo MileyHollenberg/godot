@@ -591,9 +591,9 @@ void MeshStorage::mesh_surface_update_index_region(RID p_mesh, int p_surface, in
 	ERR_FAIL_COND(p_offset + data_size > mesh->surfaces[p_surface]->index_buffer_size);
 	const uint8_t *r = p_data.ptr();
 
-	glBindBuffer(GL_ARRAY_BUFFER, mesh->surfaces[p_surface]->index_buffer);
-	glBufferSubData(GL_ARRAY_BUFFER, p_offset, data_size, r);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->surfaces[p_surface]->index_buffer);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, p_offset, data_size, r);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void MeshStorage::mesh_surface_set_material(RID p_mesh, int p_surface, RID p_material) {
@@ -1413,7 +1413,7 @@ void MeshStorage::update_mesh_instances() {
 			if (mi->mesh->blend_shape_count) {
 				SkeletonShaderGLES3::ShaderVariant variant = SkeletonShaderGLES3::MODE_BASE_PASS;
 				uint64_t specialization = 0;
-				specialization |= array_is_2d ? SkeletonShaderGLES3::MODE_2D : 0;
+				specialization |= array_is_2d ? (uint64_t)SkeletonShaderGLES3::MODE_2D : 0;
 				specialization |= SkeletonShaderGLES3::USE_BLEND_SHAPES;
 				if (!array_is_2d) {
 					if ((mi->surfaces[i].format_cache & (1ULL << RSE::ARRAY_NORMAL))) {
@@ -1479,8 +1479,8 @@ void MeshStorage::update_mesh_instances() {
 				glBindVertexArray(mi->mesh->surfaces[i]->blend_shapes[bs].vertex_array);
 				_blend_shape_bind_mesh_instance_buffer(mi, i);
 
-				specialization |= can_use_skeleton ? SkeletonShaderGLES3::USE_SKELETON : 0;
-				specialization |= (can_use_skeleton && use_8_weights) ? SkeletonShaderGLES3::USE_EIGHT_WEIGHTS : 0;
+				specialization |= can_use_skeleton ? (uint64_t)SkeletonShaderGLES3::USE_SKELETON : 0;
+				specialization |= (can_use_skeleton && use_8_weights) ? (uint64_t)SkeletonShaderGLES3::USE_EIGHT_WEIGHTS : 0;
 				specialization |= SkeletonShaderGLES3::FINAL_PASS;
 				success = skeleton_shader.shader.version_bind_shader(skeleton_shader.shader_version, variant, specialization);
 				if (!success) {
@@ -1521,10 +1521,10 @@ void MeshStorage::update_mesh_instances() {
 			if (can_use_skeleton) {
 				SkeletonShaderGLES3::ShaderVariant variant = SkeletonShaderGLES3::MODE_BASE_PASS;
 				uint64_t specialization = 0;
-				specialization |= array_is_2d ? SkeletonShaderGLES3::MODE_2D : 0;
+				specialization |= array_is_2d ? (uint64_t)SkeletonShaderGLES3::MODE_2D : 0;
 				specialization |= SkeletonShaderGLES3::USE_SKELETON;
 				specialization |= SkeletonShaderGLES3::FINAL_PASS;
-				specialization |= use_8_weights ? SkeletonShaderGLES3::USE_EIGHT_WEIGHTS : 0;
+				specialization |= use_8_weights ? (uint64_t)SkeletonShaderGLES3::USE_EIGHT_WEIGHTS : 0;
 				if (!array_is_2d) {
 					if ((mi->surfaces[i].format_cache & (1ULL << RSE::ARRAY_NORMAL))) {
 						specialization |= SkeletonShaderGLES3::USE_NORMAL;

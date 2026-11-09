@@ -429,6 +429,10 @@ void AudioStreamInteractive::_validate_property(PropertyInfo &r_property) const 
 
 	if (Engine::get_singleton()->is_editor_hint() && prop == "initial_clip") {
 #ifdef TOOLS_ENABLED
+		if (get_clip_count() == 0) {
+			// Hide property since there's no clip to choose from.
+			r_property.usage = PROPERTY_USAGE_NO_EDITOR;
+		}
 		r_property.hint_string = _get_streams_hint();
 #endif
 	} else if (prop.begins_with("clip_") && prop != "clip_count") {
@@ -817,14 +821,10 @@ void AudioStreamPlaybackInteractive::_queue(int p_to_clip_index, bool p_is_auto_
 			filler_end = filler_state.stream->get_length();
 		}
 
-		if (!filler_state.stream->has_loop()) {
-			src_no_loop = true;
-		}
-
 		if (transition.fade_mode == AudioStreamInteractive::FADE_DISABLED || transition.fade_mode == AudioStreamInteractive::FADE_OUT) {
 			// No fading, immediately start at full volume.
-			to_state.fade_volume = 0.0;
-			to_state.fade_speed = 1.0; //start at full volume, as filler is meant as a transition.
+			to_state.fade_volume = 1.0; //start at full volume, as filler is meant as a transition.
+			to_state.fade_speed = 0.0;
 		} else {
 			// Fade enable, prepare fade.
 			to_state.fade_volume = 0.0;
@@ -843,9 +843,9 @@ void AudioStreamPlaybackInteractive::_queue(int p_to_clip_index, bool p_is_auto_
 			to_state.fade_volume = 0.0;
 			to_state.fade_speed = fade_speed;
 		}
-
-		to_state.auto_advance = auto_advance_to;
 	}
+
+	to_state.auto_advance = auto_advance_to;
 }
 
 void AudioStreamPlaybackInteractive::seek(double p_time) {

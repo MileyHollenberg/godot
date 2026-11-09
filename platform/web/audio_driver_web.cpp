@@ -131,10 +131,7 @@ Error AudioDriverWeb::init() {
 	mix_rate = audio_context.mix_rate;
 	channel_count = audio_context.channel_count;
 	buffer_length = Math::closest_power_of_2(uint32_t(latency * mix_rate / 1000));
-	Error err = create(buffer_length, channel_count);
-	if (err != OK) {
-		return err;
-	}
+	RETURN_IF_ERROR(create(buffer_length, channel_count));
 	if (output_rb) {
 		memdelete_arr(output_rb);
 	}
@@ -256,13 +253,22 @@ void AudioDriverWeb::register_sample(const Ref<AudioSample> &p_sample) {
 		data_ptrw[i + frames_total] = frames[i].right;
 	}
 
+	// Adjust loop start/end to match mix rate.
+	const int sample_rate = p_sample->sample_rate;
+	int loop_begin = p_sample->loop_begin;
+	int loop_end = p_sample->loop_end;
+	if (sample_rate != mix_rate) {
+		loop_begin = Math::round(loop_begin * (float(mix_rate) / sample_rate));
+		loop_end = Math::round(loop_end * (float(mix_rate) / sample_rate));
+	}
+
 	godot_audio_sample_register_stream(
 			itos(p_sample->stream->get_instance_id()).utf8().get_data(),
 			data_ptrw,
 			frames_total,
 			loop_mode.utf8().get_data(),
-			p_sample->loop_begin,
-			p_sample->loop_end);
+			loop_begin,
+			loop_end);
 }
 
 void AudioDriverWeb::unregister_sample(const Ref<AudioSample> &p_sample) {
@@ -449,8 +455,10 @@ void AudioDriverWorklet::unlock() {
 }
 
 void AudioDriverWorklet::finish_driver() {
-	quit = true; // Ask thread to quit.
-	thread.wait_to_finish();
+	if (thread.is_started()) {
+		quit = true; // Ask thread to quit.
+		thread.wait_to_finish();
+	}
 }
 
 #else // No threads.

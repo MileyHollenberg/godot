@@ -510,7 +510,32 @@ void AudioServer::_delete_stream_playback(Ref<AudioStreamPlayback> p_playback) {
 	}
 }
 
+void AudioServer::_set_output_driver_sleep(bool p_enable) {
+	AudioDriver *driver = AudioDriver::get_singleton();
+	if (!driver) {
+		return;
+	}
+
+	if (!driver->can_output_device_sleep() || output_driver_sleeping == p_enable) {
+		return;
+	}
+
+	if (driver->set_output_device_sleep(p_enable)) {
+		output_driver_sleeping = p_enable;
+	}
+}
+
 void AudioServer::_delete_stream_playback_list_node(AudioStreamPlaybackListNode *p_playback_node) {
+	if (!p_playback_node->removed_from_playback_list.set_if_clear()) {
+		return;
+	}
+
+	int32_t previous_stream_count = playback_stream_count.postdecrement();
+	if (previous_stream_count <= 0) {
+		playback_stream_count.set(0);
+		ERR_PRINT("AudioServer playback stream counter underflowed.");
+	}
+
 	// Remove the playback from the list, registering a destructor to be run on the main thread.
 	playback_list.erase(p_playback_node, [](AudioStreamPlaybackListNode *p) {
 		delete p->prev_bus_details;
@@ -695,6 +720,7 @@ void AudioServer::add_bus(int p_at_pos) {
 	bus_map[attempt] = bus;
 
 	if (p_at_pos == -1) {
+		p_at_pos = buses.size();
 		buses.push_back(bus);
 	} else {
 		buses.insert(p_at_pos, bus);
@@ -1063,6 +1089,9 @@ void AudioServer::start_playback_stream(Ref<AudioStreamPlayback> p_playback, con
 	playback_node->state.store(AudioStreamPlaybackListNode::PLAYING);
 
 	playback_list.insert(playback_node);
+	playback_stream_count.increment();
+	playback_stream_idle_since_msec = 0;
+	_set_output_driver_sleep(false);
 }
 
 void AudioServer::stop_playback_stream(Ref<AudioStreamPlayback> p_playback) {
@@ -1399,6 +1428,27 @@ void AudioServer::update() {
 		ci->callback(ci->userdata);
 	}
 
+	int playing_mix_callbacks = 0;
+	for (CallbackItem *ci : mix_callback_list) {
+		if (ci->is_playing) {
+			playing_mix_callbacks++;
+		}
+	}
+
+	if (AudioDriver::get_singleton()->can_output_device_sleep()) {
+		if (playback_stream_count.get() == 0 && playing_mix_callbacks == 0) {
+			uint64_t now_msec = OS::get_singleton()->get_ticks_msec();
+			if (playback_stream_idle_since_msec == 0) {
+				playback_stream_idle_since_msec = now_msec;
+			} else if (now_msec - playback_stream_idle_since_msec >= AUDIO_DRIVER_SLEEP_DELAY_MSEC) {
+				_set_output_driver_sleep(true);
+			}
+		} else {
+			playback_stream_idle_since_msec = 0;
+			_set_output_driver_sleep(false);
+		}
+	}
+
 	_cleanup_lists();
 }
 
@@ -1505,6 +1555,14 @@ void AudioServer::add_mix_callback(AudioCallback p_callback, void *p_userdata) {
 	ci->callback = p_callback;
 	ci->userdata = p_userdata;
 	mix_callback_list.insert(ci);
+}
+
+void AudioServer::set_mix_callback_state(AudioCallback p_callback, void *p_userdata, bool p_is_playing) {
+	for (CallbackItem *ci : mix_callback_list) {
+		if (ci->callback == p_callback && ci->userdata == p_userdata) {
+			ci->is_playing = p_is_playing;
+		}
+	}
 }
 
 void AudioServer::remove_mix_callback(AudioCallback p_callback, void *p_userdata) {
